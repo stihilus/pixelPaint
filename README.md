@@ -2,6 +2,8 @@
 
 Pixel Paint is a simple, browser-based pixel art creation tool that allows users to create and edit pixel art with various brushes and colors.
 
+<img width="1018" alt="image" src="https://github.com/user-attachments/assets/00d77ea3-3fe2-42dc-941a-6e9b3b647a91">
+
 ## Features
 
 - **Canvas Drawing**: Create pixel art on a 480x272 canvas
