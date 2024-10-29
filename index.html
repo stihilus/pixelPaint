@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Paint</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="canvas-container">
+            <canvas id="paintCanvas" width="480" height="272"></canvas>
+            <div class="all-controls">
+                <div class="zoom-controls">
+                    <button class="zoom-btn" data-zoom="out" title="Zoom Out">
+                        <img src="out.svg" alt="zoom out">
+                    </button>
+                    <button class="zoom-btn" data-zoom="in" title="Zoom In">
+                        <img src="in.svg" alt="zoom in">
+                    </button>
+                    <button class="download-btn" title="Save Image">
+                        <img src="download.svg" alt="download">
+                    </button>
+                    <button class="load-btn" title="Load Image">
+                        <img src="load.svg" alt="Load">
+                    </button>
+                    <button class="clear-btn" title="Clear Canvas">
+                        <img src="clear.svg" alt="Clear">
+                    </button>
+                    <input type="file" id="imageLoader" accept="image/png" style="display: none">
+                </div>
+                <div class="brush-types">
+                    <button class="type-btn active" data-pattern="solid">
+                        <img src="brush0.svg" alt="solid brush">
+                    </button>
+                    <button class="type-btn" data-pattern="checker">
+                        <img src="brush1.svg" alt="checker brush">
+                    </button>
+                    <button class="type-btn" data-pattern="dots">
+                        <img src="brush2.svg" alt="dots brush">
+                    </button>
+                    <button class="type-btn" data-pattern="columns">
+                        <img src="brush3.svg" alt="columns brush">
+                    </button>
+                    <button class="type-btn" data-pattern="rows">
+                        <img src="brush4.svg" alt="rows brush">
+                    </button>
+                </div>
+                <div class="brush-sizes">
+                    <button class="brush-btn" data-size="1">
+                        <img src="1px.svg" alt="1px brush">
+                    </button>
+                    <button class="brush-btn" data-size="2">
+                        <img src="2px.svg" alt="2px brush">
+                    </button>
+                    <button class="brush-btn active" data-size="3">
+                        <img src="3px.svg" alt="3px brush">
+                    </button>
+                    <button class="brush-btn" data-size="4">
+                        <img src="4px.svg" alt="4px brush">
+                    </button>
+                    <button class="brush-btn" data-size="5">
+                        <img src="5px.svg" alt="5px brush">
+                    </button>
+                </div>
+                <div class="color-picker">
+                    <button class="color-btn" data-color="#ffffff">
+                        <img src="white.svg" alt="white">
+                    </button>
+                    <button class="color-btn active" data-color="#000000">
+                        <img src="black.svg" alt="black">
+                    </button>
+                    <button class="color-btn" data-color="#F1491D">
+                        <img src="orange.svg" alt="orange">
+                    </button>
+                    <button class="color-btn" data-color="#F1CA1D">
+                        <img src="yellow.svg" alt="yellow">
+                    </button>
+                    <button class="color-btn" data-color="#561DF1">
+                        <img src="blue.svg" alt="blue">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
