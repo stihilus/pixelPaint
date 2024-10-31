@@ -7,6 +7,9 @@ const zoomButtons = document.querySelectorAll('.zoom-btn');
 const downloadBtn = document.querySelector('.download-btn');
 const loadBtn = document.querySelector('.load-btn');
 const imageLoader = document.getElementById('imageLoader');
+const backgroundBtn = document.querySelector('.background-btn');
+const backgroundLoader = document.getElementById('backgroundLoader');
+const overlayImage = document.getElementById('overlayImage');
 
 let isDrawing = false;
 let brushSize = 3;
@@ -78,6 +81,12 @@ function setZoom(newZoom) {
         // Update canvas style
         canvas.style.width = `${480 * zoomLevel}px`;
         canvas.style.height = `${272 * zoomLevel}px`;
+        
+        // Update overlay image size if it exists
+        if (overlayImage.src) {
+            overlayImage.style.width = `${480 * zoomLevel}px`;
+            overlayImage.style.height = `${272 * zoomLevel}px`;
+        }
         
         // Restore canvas content
         ctx.imageSmoothingEnabled = false;
@@ -233,3 +242,28 @@ function loadImage(e) {
 // Add these event listeners with your other initialization code
 loadBtn.addEventListener('click', () => imageLoader.click());
 imageLoader.addEventListener('change', loadImage);
+
+function toggleBackgroundImage() {
+    backgroundLoader.click();
+}
+
+function loadBackgroundImage(e) {
+    const file = e.target.files[0];
+    
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            overlayImage.src = event.target.result;
+            overlayImage.style.display = 'block';
+            
+            // Update overlay image size based on zoom
+            overlayImage.style.width = `${480 * zoomLevel}px`;
+            overlayImage.style.height = `${272 * zoomLevel}px`;
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+// Add these event listeners with your other initialization code
+backgroundBtn.addEventListener('click', toggleBackgroundImage);
+backgroundLoader.addEventListener('change', loadBackgroundImage);

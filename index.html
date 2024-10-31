@@ -34,6 +34,7 @@
     <div class="container">
         <div class="canvas-container">
             <canvas id="paintCanvas" width="480" height="272"></canvas>
+            <img id="overlayImage" class="overlay-image" style="display: none;">
             <div class="all-controls">
                 <div class="zoom-controls">
                     <button class="zoom-btn" data-zoom="out" title="Zoom Out">
@@ -51,6 +52,10 @@
                     <button class="clear-btn" title="Clear Canvas">
                         <img src="clear.svg" alt="Clear">
                     </button>
+                    <button class="background-btn" title="Toggle Background Image">
+                        <img src="backgroundImage.svg" alt="Background Image">
+                    </button>
+                    <input type="file" id="backgroundLoader" accept="image/*" style="display: none">
                     <input type="file" id="imageLoader" accept="image/png" style="display: none">
                 </div>
                 <div class="brush-types">
