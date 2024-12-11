@@ -127,6 +127,43 @@ canvas.addEventListener('mousemove', draw);
 canvas.addEventListener('mouseup', stopDrawing);
 canvas.addEventListener('mouseout', stopDrawing);
 
+// Add touch and pointer events for iPad Pencil support
+canvas.addEventListener('touchstart', handleTouchStart);
+canvas.addEventListener('touchmove', handleTouchMove);
+canvas.addEventListener('touchend', stopDrawing);
+canvas.addEventListener('touchcancel', stopDrawing);
+
+// Prevent scrolling when touching the canvas
+canvas.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+}, { passive: false });
+
+canvas.addEventListener('touchmove', function(e) {
+    e.preventDefault();
+}, { passive: false });
+
+function handleTouchStart(e) {
+    // Get the first touch point
+    const touch = e.touches[0];
+    // Convert touch to mouse event coordinates
+    const mouseEvent = new MouseEvent('mousedown', {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+    });
+    startDrawing(mouseEvent);
+}
+
+function handleTouchMove(e) {
+    // Get the first touch point
+    const touch = e.touches[0];
+    // Convert touch to mouse event coordinates
+    const mouseEvent = new MouseEvent('mousemove', {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+    });
+    draw(mouseEvent);
+}
+
 // Brush size selection
 brushButtons.forEach(button => {
     button.addEventListener('click', () => {
