@@ -7,9 +7,6 @@ const zoomButtons = document.querySelectorAll('.zoom-btn');
 const downloadBtn = document.querySelector('.download-btn');
 const loadBtn = document.querySelector('.load-btn');
 const imageLoader = document.getElementById('imageLoader');
-const backgroundBtn = document.querySelector('.background-btn');
-const backgroundLoader = document.getElementById('backgroundLoader');
-const overlayImage = document.getElementById('overlayImage');
 const handToolBtn = document.getElementById('handTool');
 const canvasSizeBtn = document.getElementById('canvasSizeBtn');
 const sizeModal = document.getElementById('sizeModal');
@@ -226,10 +223,10 @@ zoomButtons.forEach(button => {
 setZoom(2);
 
 function downloadCanvas() {
-    // Create a temporary canvas at 2x size
+    // Create a temporary canvas at actual canvas size
     const tempCanvas = document.createElement('canvas');
-    tempCanvas.width = 960;  // 480 * 2
-    tempCanvas.height = 544; // 272 * 2
+    tempCanvas.width = canvas.width;
+    tempCanvas.height = canvas.height;
     const tempCtx = tempCanvas.getContext('2d');
     
     // Disable anti-aliasing on the temporary canvas
@@ -239,13 +236,12 @@ function downloadCanvas() {
     tempCtx.fillStyle = 'white';
     tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
     
-    // Draw the original canvas scaled up 2x
-    tempCtx.scale(2, 2);
+    // Draw the original canvas at its actual size
     tempCtx.drawImage(canvas, 0, 0);
     
     // Create a temporary link
     const link = document.createElement('a');
-    // Get the scaled canvas data as PNG
+    // Get the canvas data as PNG
     const dataUrl = tempCanvas.toDataURL('image/png');
     // Set the download attributes
     link.download = 'pixel-art.png';
@@ -263,8 +259,9 @@ document.querySelector('.clear-btn').addEventListener('click', clearCanvas);
 
 // Add this function with your other functions
 function clearCanvas() {
-    const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
 function loadImage(e) {
@@ -273,109 +270,27 @@ function loadImage(e) {
     if (file) {
         const img = new Image();
         img.onload = function() {
-            // Check if image dimensions match the required size
-            if (img.width === 960 && img.height === 544) {
-                // Create a temporary canvas to draw the loaded image
-                const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = canvas.width;
-                tempCanvas.height = canvas.height;
-                const tempCtx = tempCanvas.getContext('2d');
-                
-                // Draw the image scaled down to the canvas size
-                tempCtx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                
-                // Clear the current canvas and draw the loaded image
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.drawImage(tempCanvas, 0, 0);
-            } else {
-                alert('Please load a PNG image with dimensions 960x544 pixels.');
-            }
+            // Resize canvas to match image dimensions
+            resizeCanvas(img.width, img.height);
+            
+            // Clear the current canvas and draw the loaded image
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0);
         };
         img.src = URL.createObjectURL(file);
     }
 }
 
-// Add these event listeners with your other initialization code
-loadBtn.addEventListener('click', () => imageLoader.click());
+// Update the load button event listeners
+loadBtn.addEventListener('click', () => {
+    // Show current canvas dimensions in the alert
+    alert('The canvas will be resized to match the image dimensions');
+    imageLoader.click();
+});
 imageLoader.addEventListener('change', loadImage);
 
-function toggleBackgroundImage() {
-    backgroundLoader.click();
-}
-
-function loadBackgroundImage(e) {
-    const file = e.target.files[0];
-    
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            overlayImage.src = event.target.result;
-            overlayImage.style.display = 'block';
-            
-            // Update overlay image size based on zoom
-            overlayImage.style.width = `${480 * zoomLevel}px`;
-            overlayImage.style.height = `${272 * zoomLevel}px`;
-        };
-        reader.readAsDataURL(file);
-    }
-}
-
-// Add these event listeners with your other initialization code
-backgroundBtn.addEventListener('click', toggleBackgroundImage);
-backgroundLoader.addEventListener('change', loadBackgroundImage);
-
-// Add these event listeners with other button listeners
-handToolBtn.addEventListener('click', () => {
-    isHandToolActive = !isHandToolActive;
-    handToolBtn.classList.toggle('active');
-    if (isHandToolActive) {
-        canvas.style.cursor = 'grab';
-    } else {
-        canvas.style.cursor = 'crosshair';
-    }
-});
-
-// Add these mouse event listeners to handle canvas dragging
-canvas.addEventListener('mousedown', (e) => {
-    if (isHandToolActive) {
-        isDragging = true;
-        canvas.style.cursor = 'grabbing';
-        lastX = e.clientX;
-        lastY = e.clientY;
-    }
-});
-
-canvas.addEventListener('mousemove', (e) => {
-    if (isHandToolActive && isDragging) {
-        const deltaX = e.clientX - lastX;
-        const deltaY = e.clientY - lastY;
-        
-        canvasOffsetX += deltaX;
-        canvasOffsetY += deltaY;
-        
-        canvas.style.transform = `translate(${canvasOffsetX}px, ${canvasOffsetY}px)`;
-        
-        lastX = e.clientX;
-        lastY = e.clientY;
-    }
-});
-
-canvas.addEventListener('mouseup', () => {
-    if (isHandToolActive) {
-        isDragging = false;
-        canvas.style.cursor = 'grab';
-    }
-});
-
-canvas.addEventListener('mouseleave', () => {
-    if (isHandToolActive) {
-        isDragging = false;
-        canvas.style.cursor = 'grab';
-    }
-});
-
 function resizeCanvas(width, height) {
-    // Create a temporary canvas to store the current image
+    // Store the current canvas content
     const tempCanvas = document.createElement('canvas');
     tempCanvas.width = canvas.width;
     tempCanvas.height = canvas.height;
@@ -407,8 +322,8 @@ function resizeCanvas(width, height) {
     // Draw the old content
     ctx.drawImage(
         tempCanvas,
-        sourceX, sourceY, sourceWidth, sourceHeight,  // Source coordinates and dimensions
-        destX, destY, sourceWidth, sourceHeight       // Destination coordinates and dimensions
+        sourceX, sourceY, sourceWidth, sourceHeight,
+        destX, destY, sourceWidth, sourceHeight
     );
     
     // Update the canvas style dimensions based on zoom
@@ -459,3 +374,53 @@ function closeModal() {
     customWidth.value = '';
     customHeight.value = '';
 }
+
+// Add these event listeners with other button listeners
+handToolBtn.addEventListener('click', () => {
+    isHandToolActive = !isHandToolActive;
+    handToolBtn.classList.toggle('active');
+    if (isHandToolActive) {
+        canvas.style.cursor = 'grab';
+    } else {
+        canvas.style.cursor = 'crosshair';
+    }
+});
+
+// Add these mouse event listeners to handle canvas dragging
+canvas.addEventListener('mousedown', (e) => {
+    if (isHandToolActive) {
+        isDragging = true;
+        canvas.style.cursor = 'grabbing';
+        lastX = e.clientX;
+        lastY = e.clientY;
+    }
+});
+
+canvas.addEventListener('mousemove', (e) => {
+    if (isHandToolActive && isDragging) {
+        const deltaX = e.clientX - lastX;
+        const deltaY = e.clientY - lastY;
+        
+        canvasOffsetX += deltaX;
+        canvasOffsetY += deltaY;
+        
+        canvas.style.transform = `translate(${canvasOffsetX}px, ${canvasOffsetY}px)`;
+        
+        lastX = e.clientX;
+        lastY = e.clientY;
+    }
+});
+
+canvas.addEventListener('mouseup', () => {
+    if (isHandToolActive) {
+        isDragging = false;
+        canvas.style.cursor = 'grab';
+    }
+});
+
+canvas.addEventListener('mouseleave', () => {
+    if (isHandToolActive) {
+        isDragging = false;
+        canvas.style.cursor = 'grab';
+    }
+});
