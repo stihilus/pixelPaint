@@ -10,12 +10,19 @@ const imageLoader = document.getElementById('imageLoader');
 const backgroundBtn = document.querySelector('.background-btn');
 const backgroundLoader = document.getElementById('backgroundLoader');
 const overlayImage = document.getElementById('overlayImage');
+const handToolBtn = document.getElementById('handTool');
 
 let isDrawing = false;
 let brushSize = 3;
 let currentColor = '#000000';
 let currentPattern = 'solid';
 let zoomLevel = 2;
+let isHandToolActive = false;
+let isDragging = false;
+let lastX = 0;
+let lastY = 0;
+let canvasOffsetX = 0;
+let canvasOffsetY = 0;
 
 // Pattern definitions
 const patterns = {
@@ -59,6 +66,7 @@ ctx.fillStyle = 'white';
 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 function startDrawing(e) {
+    if (isHandToolActive) return;
     isDrawing = true;
     draw(e);
 }
@@ -96,7 +104,7 @@ function setZoom(newZoom) {
 }
 
 function draw(e) {
-    if (!isDrawing) return;
+    if (!isDrawing || isHandToolActive) return;
 
     const rect = canvas.getBoundingClientRect();
     // Adjust coordinates based on zoom level
@@ -143,9 +151,9 @@ canvas.addEventListener('touchmove', function(e) {
 }, { passive: false });
 
 function handleTouchStart(e) {
-    // Get the first touch point
+    if (isHandToolActive) return;
+    
     const touch = e.touches[0];
-    // Convert touch to mouse event coordinates
     const mouseEvent = new MouseEvent('mousedown', {
         clientX: touch.clientX,
         clientY: touch.clientY
@@ -154,9 +162,9 @@ function handleTouchStart(e) {
 }
 
 function handleTouchMove(e) {
-    // Get the first touch point
+    if (isHandToolActive) return;
+    
     const touch = e.touches[0];
-    // Convert touch to mouse event coordinates
     const mouseEvent = new MouseEvent('mousemove', {
         clientX: touch.clientX,
         clientY: touch.clientY
@@ -304,3 +312,53 @@ function loadBackgroundImage(e) {
 // Add these event listeners with your other initialization code
 backgroundBtn.addEventListener('click', toggleBackgroundImage);
 backgroundLoader.addEventListener('change', loadBackgroundImage);
+
+// Add these event listeners with other button listeners
+handToolBtn.addEventListener('click', () => {
+    isHandToolActive = !isHandToolActive;
+    handToolBtn.classList.toggle('active');
+    if (isHandToolActive) {
+        canvas.style.cursor = 'grab';
+    } else {
+        canvas.style.cursor = 'crosshair';
+    }
+});
+
+// Add these mouse event listeners to handle canvas dragging
+canvas.addEventListener('mousedown', (e) => {
+    if (isHandToolActive) {
+        isDragging = true;
+        canvas.style.cursor = 'grabbing';
+        lastX = e.clientX;
+        lastY = e.clientY;
+    }
+});
+
+canvas.addEventListener('mousemove', (e) => {
+    if (isHandToolActive && isDragging) {
+        const deltaX = e.clientX - lastX;
+        const deltaY = e.clientY - lastY;
+        
+        canvasOffsetX += deltaX;
+        canvasOffsetY += deltaY;
+        
+        canvas.style.transform = `translate(${canvasOffsetX}px, ${canvasOffsetY}px)`;
+        
+        lastX = e.clientX;
+        lastY = e.clientY;
+    }
+});
+
+canvas.addEventListener('mouseup', () => {
+    if (isHandToolActive) {
+        isDragging = false;
+        canvas.style.cursor = 'grab';
+    }
+});
+
+canvas.addEventListener('mouseleave', () => {
+    if (isHandToolActive) {
+        isDragging = false;
+        canvas.style.cursor = 'grab';
+    }
+});
