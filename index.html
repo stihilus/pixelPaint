@@ -36,7 +36,8 @@
             <canvas id="paintCanvas" width="480" height="272"></canvas>
             <img id="overlayImage" class="overlay-image" style="display: none;">
             <div class="all-controls">
-                <div class="zoom-controls">
+                <div class="controls-line">
+                    <!-- Zoom Controls -->
                     <button class="zoom-btn" data-zoom="out" title="Zoom Out">
                         <img src="out.svg" alt="zoom out">
                     </button>
@@ -55,10 +56,10 @@
                     <button class="background-btn" title="Toggle Background Image">
                         <img src="backgroundImage.svg" alt="Background Image">
                     </button>
-                    <input type="file" id="backgroundLoader" accept="image/*" style="display: none">
-                    <input type="file" id="imageLoader" accept="image/png" style="display: none">
-                </div>
-                <div class="brush-types">
+                    
+                    <div class="separator"></div>
+                    
+                    <!-- Brush Types -->
                     <button class="type-btn active" data-pattern="solid">
                         <img src="brush0.svg" alt="solid brush">
                     </button>
@@ -74,8 +75,10 @@
                     <button class="type-btn" data-pattern="rows">
                         <img src="brush4.svg" alt="rows brush">
                     </button>
-                </div>
-                <div class="brush-sizes">
+                    
+                    <div class="separator"></div>
+                    
+                    <!-- Brush Sizes -->
                     <button class="brush-btn" data-size="1">
                         <img src="1px.svg" alt="1px brush">
                     </button>
@@ -91,8 +94,10 @@
                     <button class="brush-btn" data-size="5">
                         <img src="5px.svg" alt="5px brush">
                     </button>
-                </div>
-                <div class="color-picker">
+                    
+                    <div class="separator"></div>
+                    
+                    <!-- Color Picker -->
                     <button class="color-btn" data-color="#ffffff">
                         <img src="white.svg" alt="white">
                     </button>
@@ -109,7 +114,11 @@
                         <img src="blue.svg" alt="blue">
                     </button>
                 </div>
-                <div class="credit" style="font-size: 12px; margin-top: 30px;">
+                
+                <input type="file" id="backgroundLoader" accept="image/*" style="display: none">
+                <input type="file" id="imageLoader" accept="image/png" style="display: none">
+                
+                <div class="credit" style="font-size: 12px; margin-top: 10px;">
                     <a href="https://www.lomz.net" target="_blank" style="color: #3c00ff; font-family: 'Inter', sans-serif;">
                         made by lomz.net
                     </a>
