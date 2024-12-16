@@ -14,6 +14,9 @@ const customWidth = document.getElementById('customWidth');
 const customHeight = document.getElementById('customHeight');
 const cancelSizeBtn = document.getElementById('cancelSize');
 const confirmSizeBtn = document.getElementById('confirmSize');
+const clearModal = document.getElementById('clearModal');
+const cancelClearBtn = document.getElementById('cancelClear');
+const confirmClearBtn = document.getElementById('confirmClear');
 
 let isDrawing = false;
 let brushSize = 3;
@@ -255,7 +258,9 @@ function downloadCanvas() {
 downloadBtn.addEventListener('click', downloadCanvas);
 
 // Add this event listener with your other initialization code
-document.querySelector('.clear-btn').addEventListener('click', clearCanvas);
+document.querySelector('.clear-btn').addEventListener('click', () => {
+    clearModal.style.display = 'flex';
+});
 
 // Add this function with your other functions
 function clearCanvas() {
@@ -422,5 +427,22 @@ canvas.addEventListener('mouseleave', () => {
     if (isHandToolActive) {
         isDragging = false;
         canvas.style.cursor = 'grab';
+    }
+});
+
+// Add clear modal event listeners
+cancelClearBtn.addEventListener('click', () => {
+    clearModal.style.display = 'none';
+});
+
+confirmClearBtn.addEventListener('click', () => {
+    clearCanvas();
+    clearModal.style.display = 'none';
+});
+
+// Close on outside click
+clearModal.addEventListener('click', (e) => {
+    if (e.target === clearModal) {
+        clearModal.style.display = 'none';
     }
 });
