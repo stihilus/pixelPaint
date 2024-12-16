@@ -11,6 +11,12 @@ const backgroundBtn = document.querySelector('.background-btn');
 const backgroundLoader = document.getElementById('backgroundLoader');
 const overlayImage = document.getElementById('overlayImage');
 const handToolBtn = document.getElementById('handTool');
+const canvasSizeBtn = document.getElementById('canvasSizeBtn');
+const sizeModal = document.getElementById('sizeModal');
+const customWidth = document.getElementById('customWidth');
+const customHeight = document.getElementById('customHeight');
+const cancelSizeBtn = document.getElementById('cancelSize');
+const confirmSizeBtn = document.getElementById('confirmSize');
 
 let isDrawing = false;
 let brushSize = 3;
@@ -77,23 +83,28 @@ function stopDrawing() {
 
 function setZoom(newZoom) {
     if (newZoom >= 1 && newZoom <= 3) {
-        zoomLevel = newZoom;
-        
-        // Store current canvas content
+        // Store current canvas content and size
         const tempCanvas = document.createElement('canvas');
         tempCanvas.width = canvas.width;
         tempCanvas.height = canvas.height;
         const tempCtx = tempCanvas.getContext('2d');
         tempCtx.drawImage(canvas, 0, 0);
         
-        // Update canvas style
-        canvas.style.width = `${480 * zoomLevel}px`;
-        canvas.style.height = `${272 * zoomLevel}px`;
+        // Store current dimensions
+        const currentWidth = canvas.width;
+        const currentHeight = canvas.height;
+        
+        // Update zoom level
+        zoomLevel = newZoom;
+        
+        // Update canvas style while keeping the actual dimensions
+        canvas.style.width = `${currentWidth * zoomLevel}px`;
+        canvas.style.height = `${currentHeight * zoomLevel}px`;
         
         // Update overlay image size if it exists
         if (overlayImage.src) {
-            overlayImage.style.width = `${480 * zoomLevel}px`;
-            overlayImage.style.height = `${272 * zoomLevel}px`;
+            overlayImage.style.width = `${currentWidth * zoomLevel}px`;
+            overlayImage.style.height = `${currentHeight * zoomLevel}px`;
         }
         
         // Restore canvas content
@@ -362,3 +373,71 @@ canvas.addEventListener('mouseleave', () => {
         canvas.style.cursor = 'grab';
     }
 });
+
+function resizeCanvas(width, height) {
+    // Create a temporary canvas to store the current image
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = canvas.width;
+    tempCanvas.height = canvas.height;
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCtx.drawImage(canvas, 0, 0);
+    
+    // Resize the main canvas
+    canvas.width = width;
+    canvas.height = height;
+    
+    // Clear and fill with white background
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw the old content scaled to the new size
+    ctx.drawImage(tempCanvas, 0, 0, width, height);
+    
+    // Update the canvas style dimensions based on zoom
+    canvas.style.width = `${width * zoomLevel}px`;
+    canvas.style.height = `${height * zoomLevel}px`;
+    
+    // Reset any transforms or offsets
+    canvasOffsetX = 0;
+    canvasOffsetY = 0;
+    canvas.style.transform = `translate(${canvasOffsetX}px, ${canvasOffsetY}px)`;
+}
+
+// Add these event listeners with your other listeners
+canvasSizeBtn.addEventListener('click', () => {
+    // Set current canvas size as placeholder
+    customWidth.placeholder = canvas.width;
+    customHeight.placeholder = canvas.height;
+    sizeModal.style.display = 'flex';
+});
+
+sizeModal.addEventListener('click', (e) => {
+    if (e.target === sizeModal) {
+        closeModal();
+    }
+});
+
+cancelSizeBtn.addEventListener('click', () => {
+    closeModal();
+});
+
+confirmSizeBtn.addEventListener('click', () => {
+    const width = parseInt(customWidth.value) || canvas.width;
+    const height = parseInt(customHeight.value) || canvas.height;
+    
+    if (width > 0 && height > 0 && width <= 2000 && height <= 2000) {
+        // Resize the canvas
+        resizeCanvas(width, height);
+        
+        // Close the modal
+        closeModal();
+    } else {
+        alert('Please enter valid dimensions (1-2000 pixels)');
+    }
+});
+
+function closeModal() {
+    sizeModal.style.display = 'none';
+    customWidth.value = '';
+    customHeight.value = '';
+}
