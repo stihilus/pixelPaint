@@ -390,8 +390,26 @@ function resizeCanvas(width, height) {
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Draw the old content scaled to the new size
-    ctx.drawImage(tempCanvas, 0, 0, width, height);
+    // Calculate offsets for centering
+    const xOffset = (width - tempCanvas.width) / 2;
+    const yOffset = (height - tempCanvas.height) / 2;
+    
+    // Calculate source coordinates for cropping
+    const sourceX = xOffset < 0 ? Math.abs(xOffset) : 0;
+    const sourceY = yOffset < 0 ? Math.abs(yOffset) : 0;
+    const sourceWidth = Math.min(tempCanvas.width - sourceX * 2, width);
+    const sourceHeight = Math.min(tempCanvas.height - sourceY * 2, height);
+    
+    // Calculate destination coordinates
+    const destX = xOffset > 0 ? xOffset : 0;
+    const destY = yOffset > 0 ? yOffset : 0;
+    
+    // Draw the old content
+    ctx.drawImage(
+        tempCanvas,
+        sourceX, sourceY, sourceWidth, sourceHeight,  // Source coordinates and dimensions
+        destX, destY, sourceWidth, sourceHeight       // Destination coordinates and dimensions
+    );
     
     // Update the canvas style dimensions based on zoom
     canvas.style.width = `${width * zoomLevel}px`;
